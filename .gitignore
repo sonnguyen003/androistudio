@@ -1,5 +1,7 @@
 *.iml
 .idea/
+**/build/
+hs_err_pid*
 .gradle
 /local.properties
 /.idea/caches
