@@ -35,6 +35,9 @@ android {
 
 dependencies {
     implementation(libs.appcompat)
+    implementation(libs.constraintlayout)
+    implementation(libs.recyclerview)
+    implementation(libs.material)
     implementation(project(":shared"))
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
