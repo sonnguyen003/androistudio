@@ -90,6 +90,37 @@ public class MusicDatabaseHelper extends SQLiteOpenHelper {
         return db.insert(TABLE_SONGS, null, values);
     }
 
+    // Insert a song with specific ID (for Deezer tracks)
+    public long insertSongWithId(Song song) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_ID, song.getId());
+        values.put(COLUMN_TITLE, song.getTitle());
+        values.put(COLUMN_ARTIST, song.getArtist());
+        values.put(COLUMN_ALBUM, song.getAlbum());
+        values.put(COLUMN_PATH, song.getPath());
+        values.put(COLUMN_DURATION, song.getDuration());
+        values.put(COLUMN_IS_ASSET, 0);
+        
+        return db.insertWithOnConflict(TABLE_SONGS, null, values, 
+                SQLiteDatabase.CONFLICT_IGNORE);
+    }
+
+    // Get song by ID
+    public Song getSongById(long id) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_SONGS, null, 
+                COLUMN_ID + " = ?", new String[]{String.valueOf(id)}, null, null, null);
+        
+        Song song = null;
+        if (cursor.moveToFirst()) {
+            song = cursorToSong(cursor);
+        }
+        cursor.close();
+        return song;
+    }
+
     // Get all songs
     public List<Song> getAllSongs() {
         List<Song> songs = new ArrayList<>();
@@ -116,6 +147,27 @@ public class MusicDatabaseHelper extends SQLiteOpenHelper {
         
         Cursor cursor = db.query(TABLE_SONGS, null, 
                 COLUMN_IS_ASSET + " = 1", null, null, null, 
+                COLUMN_TITLE + " ASC");
+        
+        if (cursor.moveToFirst()) {
+            do {
+                Song song = cursorToSong(cursor);
+                songs.add(song);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        
+        return songs;
+    }
+
+    // Get local songs only (assets + imported, NOT Deezer online songs)
+    public List<Song> getLocalSongs() {
+        List<Song> songs = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        
+        // Filter out songs with http URLs (Deezer songs)
+        Cursor cursor = db.query(TABLE_SONGS, null, 
+                COLUMN_PATH + " NOT LIKE 'http%'", null, null, null, 
                 COLUMN_TITLE + " ASC");
         
         if (cursor.moveToFirst()) {

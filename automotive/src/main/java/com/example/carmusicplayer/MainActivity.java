@@ -68,30 +68,52 @@ public class MainActivity extends AppCompatActivity {
 
     // Mini player views
     private android.widget.LinearLayout globalMiniPlayer;
+    private android.widget.LinearLayout miniPlayerExpanded;
+    private android.widget.LinearLayout miniPlayerCollapsed;
     private android.widget.ImageView ivMiniAlbum;
     private android.widget.TextView tvMiniTitle;
     private android.widget.TextView tvMiniArtist;
+    private android.widget.TextView tvMiniTitleCollapsed;
     private android.widget.ImageButton btnMiniPlayPause;
+    private android.widget.ImageButton btnMiniPlayPauseCollapsed;
     private android.widget.ImageButton btnMiniShuffle;
     private android.widget.ImageButton btnMiniRepeat;
     private android.widget.ImageButton btnMiniMute;
+    private android.widget.ImageButton btnCollapseMiniPlayer;
+    private android.widget.ImageButton btnExpandMiniPlayer;
     private android.widget.SeekBar seekBarMini;
+    private android.widget.SeekBar seekBarMiniVolume;
     private android.widget.TextView tvMiniCurrentTime;
     private android.widget.TextView tvMiniTotalTime;
+    private android.widget.TextView tvMiniVolumePercent;
     private boolean isShuffleOn = false;
+    private boolean isMiniPlayerCollapsed = false;
 
     private void initMiniPlayer() {
         globalMiniPlayer = findViewById(R.id.globalMiniPlayer);
+        miniPlayerExpanded = findViewById(R.id.miniPlayerExpanded);
+        miniPlayerCollapsed = findViewById(R.id.miniPlayerCollapsed);
         ivMiniAlbum = findViewById(R.id.ivMiniAlbum);
         tvMiniTitle = findViewById(R.id.tvMiniTitle);
         tvMiniArtist = findViewById(R.id.tvMiniArtist);
+        tvMiniTitleCollapsed = findViewById(R.id.tvMiniTitleCollapsed);
         btnMiniPlayPause = findViewById(R.id.btnMiniPlayPause);
+        btnMiniPlayPauseCollapsed = findViewById(R.id.btnMiniPlayPauseCollapsed);
         btnMiniShuffle = findViewById(R.id.btnMiniShuffle);
         btnMiniRepeat = findViewById(R.id.btnMiniRepeat);
         btnMiniMute = findViewById(R.id.btnMiniMute);
+        btnCollapseMiniPlayer = findViewById(R.id.btnCollapseMiniPlayer);
+        btnExpandMiniPlayer = findViewById(R.id.btnExpandMiniPlayer);
         seekBarMini = findViewById(R.id.seekBarMini);
+        seekBarMiniVolume = findViewById(R.id.seekBarMiniVolume);
         tvMiniCurrentTime = findViewById(R.id.tvMiniCurrentTime);
         tvMiniTotalTime = findViewById(R.id.tvMiniTotalTime);
+        tvMiniVolumePercent = findViewById(R.id.tvMiniVolumePercent);
+
+        // Collapse/Expand buttons
+        btnCollapseMiniPlayer.setOnClickListener(v -> collapseMiniPlayer());
+        btnExpandMiniPlayer.setOnClickListener(v -> expandMiniPlayer());
+        btnMiniPlayPauseCollapsed.setOnClickListener(v -> togglePlayPause());
 
         // Play/Pause
         btnMiniPlayPause.setOnClickListener(v -> togglePlayPause());
@@ -111,6 +133,23 @@ public class MainActivity extends AppCompatActivity {
 
         // Mute
         btnMiniMute.setOnClickListener(v -> toggleMute());
+
+        // Volume seek bar
+        seekBarMiniVolume.setProgress(savedVolume);
+        seekBarMiniVolume.setOnSeekBarChangeListener(new android.widget.SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(android.widget.SeekBar seekBar, int progress, boolean fromUser) {
+                if (fromUser) {
+                    setVolume(progress);
+                    tvMiniVolumePercent.setText(progress + "%");
+                    btnMiniMute.setImageResource(progress == 0 ? R.drawable.ic_volume_off : R.drawable.ic_volume);
+                }
+            }
+            @Override
+            public void onStartTrackingTouch(android.widget.SeekBar seekBar) {}
+            @Override
+            public void onStopTrackingTouch(android.widget.SeekBar seekBar) {}
+        });
 
         // Seek bar
         seekBarMini.setOnSeekBarChangeListener(new android.widget.SeekBar.OnSeekBarChangeListener() {
@@ -529,6 +568,15 @@ public class MainActivity extends AppCompatActivity {
             btnMiniPlayPause.setImageResource(isPlaying ? R.drawable.ic_pause : R.drawable.ic_play);
             btnMiniMute.setImageResource(isMuted ? R.drawable.ic_volume_off : R.drawable.ic_volume);
             
+            // Also update collapsed view
+            tvMiniTitleCollapsed.setText(currentSong.getTitle() + " - " + currentSong.getArtist());
+            btnMiniPlayPauseCollapsed.setImageResource(isPlaying ? R.drawable.ic_pause : R.drawable.ic_play);
+            
+            // Update volume controls
+            int volumePercent = isMuted ? 0 : savedVolume;
+            seekBarMiniVolume.setProgress(volumePercent);
+            tvMiniVolumePercent.setText(volumePercent + "%");
+            
             int duration = mediaPlayer != null ? mediaPlayer.getDuration() : (int) currentSong.getDuration();
             int position = mediaPlayer != null ? mediaPlayer.getCurrentPosition() : 0;
             
@@ -541,6 +589,56 @@ public class MainActivity extends AppCompatActivity {
             seekBarMini.setProgress(position);
             updateMiniTimeLabel(tvMiniCurrentTime, position);
             updateMiniTimeLabel(tvMiniTotalTime, duration);
+        }
+    }
+
+    // Methods for RadioFragment to control mini player visibility
+    public void hideMiniPlayer() {
+        if (globalMiniPlayer != null) {
+            globalMiniPlayer.setVisibility(android.view.View.GONE);
+        }
+    }
+
+    public void showMiniPlayer() {
+        if (globalMiniPlayer != null && currentSong != null && activeFragment != homeFragment) {
+            globalMiniPlayer.setVisibility(android.view.View.VISIBLE);
+        }
+    }
+
+    // Methods for RadioFragment to control bottom nav visibility
+    public void hideBottomNav() {
+        if (bottomNav != null) {
+            bottomNav.setVisibility(android.view.View.GONE);
+        }
+    }
+
+    public void showBottomNav() {
+        if (bottomNav != null) {
+            bottomNav.setVisibility(android.view.View.VISIBLE);
+        }
+    }
+
+    // Collapse mini player to show only minimal bar
+    private void collapseMiniPlayer() {
+        isMiniPlayerCollapsed = true;
+        if (miniPlayerExpanded != null && miniPlayerCollapsed != null) {
+            miniPlayerExpanded.setVisibility(android.view.View.GONE);
+            miniPlayerCollapsed.setVisibility(android.view.View.VISIBLE);
+            // Update collapsed view with current song info
+            if (currentSong != null) {
+                tvMiniTitleCollapsed.setText(currentSong.getTitle() + " - " + currentSong.getArtist());
+                btnMiniPlayPauseCollapsed.setImageResource(
+                    (mediaPlayer != null && mediaPlayer.isPlaying()) ? R.drawable.ic_pause : R.drawable.ic_play);
+            }
+        }
+    }
+
+    // Expand mini player to show full controls
+    private void expandMiniPlayer() {
+        isMiniPlayerCollapsed = false;
+        if (miniPlayerExpanded != null && miniPlayerCollapsed != null) {
+            miniPlayerCollapsed.setVisibility(android.view.View.GONE);
+            miniPlayerExpanded.setVisibility(android.view.View.VISIBLE);
         }
     }
 

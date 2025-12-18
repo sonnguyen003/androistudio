@@ -19,7 +19,8 @@ public class MusicScanner {
     private static final String TAG = "MusicScanner";
 
     /**
-     * Initialize music - scan assets and return all songs from database
+     * Initialize music - scan assets and return local songs from database
+     * This does NOT include Deezer online songs (they have http URLs)
      */
     public static List<Song> getAllSongs(Context context) {
         // First, scan and register assets
@@ -28,9 +29,9 @@ public class MusicScanner {
         // Get database helper
         MusicDatabaseHelper dbHelper = MusicDatabaseHelper.getInstance(context);
         
-        // Get songs from database
-        List<Song> songs = dbHelper.getAllSongs();
-        Log.d(TAG, "Database has " + songs.size() + " songs");
+        // Get only local songs from database (assets + imported, NOT Deezer)
+        List<Song> songs = dbHelper.getLocalSongs();
+        Log.d(TAG, "Database has " + songs.size() + " local songs");
         
         // Also try to scan from MediaStore and add to database
         List<Song> deviceSongs = scanWithMediaStore(context);

@@ -97,4 +97,20 @@ public class ListFragment extends Fragment implements SongAdapter.OnSongClickLis
         super.onResume();
         loadData(); // Refresh when returning to this fragment
     }
+
+    @Override
+    public void setMenuVisibility(boolean menuVisible) {
+        super.setMenuVisibility(menuVisible);
+        // Refresh when tab becomes visible in ViewPager2
+        if (menuVisible && isResumed()) {
+            loadData();
+        }
+    }
+
+    // Public method to allow parent fragments to trigger refresh
+    public void refreshData() {
+        if (isAdded()) {
+            loadData();
+        }
+    }
 }

@@ -84,17 +84,16 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:orientation="vertical"
-        android:gravity="center"
-        android:padding="24dp"
-        android:background="#16213E">
+        android:gravity="center_horizontal"
+        android:background="#16213E"
+        android:padding="8dp">
 
         <!-- Toggle Library Button -->
         <ImageButton
             android:id="@+id/btnToggleLibrary"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
             android:layout_gravity="start"
-            android:layout_marginBottom="8dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="Toggle Library"
             android:src="@drawable/ic_menu"
@@ -106,15 +105,15 @@
             android:layout_height="wrap_content"
             android:text="Now Playing"
             android:textColor="#FFFFFF"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="16dp" />
+            android:textSize="14sp"
+            android:textStyle="bold" />
 
         <!-- Album Art -->
         <ImageView
             android:id="@+id/ivAlbumArt"
-            android:layout_width="160dp"
-            android:layout_height="160dp"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginTop="4dp"
             android:background="@drawable/album_art_background"
             android:contentDescription="Album Art"
             android:scaleType="centerCrop"
@@ -125,10 +124,10 @@
             android:id="@+id/tvSongTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="4dp"
             android:text="No song playing"
             android:textColor="#FFFFFF"
-            android:textSize="16sp"
+            android:textSize="13sp"
             android:textStyle="bold"
             android:maxLines="1"
             android:ellipsize="end" />
@@ -138,35 +137,35 @@
             android:id="@+id/tvArtist"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
             android:text="Unknown Artist"
             android:textColor="#B0B0B0"
-            android:textSize="13sp" />
+            android:textSize="11sp" />
 
-        <!-- Progress Bar -->
-        <SeekBar
-            android:id="@+id/seekBar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:progressTint="#E94560"
-            android:thumbTint="#E94560" />
-
-        <!-- Time Labels -->
+        <!-- Progress Bar with Time Labels inline -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="2dp">
+            android:layout_marginTop="4dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/tvCurrentTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0:00"
+                android:textColor="#B0B0B0"
+                android:textSize="9sp" />
+
+            <SeekBar
+                android:id="@+id/seekBar"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="0:00"
-                android:textColor="#B0B0B0"
-                android:textSize="11sp" />
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="4dp"
+                android:progressTint="#E94560"
+                android:thumbTint="#E94560" />
 
             <TextView
                 android:id="@+id/tvTotalTime"
@@ -174,23 +173,33 @@
                 android:layout_height="wrap_content"
                 android:text="0:00"
                 android:textColor="#B0B0B0"
-                android:textSize="11sp" />
+                android:textSize="9sp" />
 
         </LinearLayout>
 
-        <!-- Main Control Buttons -->
+        <!-- All Controls in One Row: Shuffle | Prev | Play | Next | Repeat -->
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="4dp"
             android:gravity="center"
             android:orientation="horizontal">
 
             <ImageButton
+                android:id="@+id/btnShuffle"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginEnd="8dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Shuffle"
+                android:src="@drawable/ic_shuffle"
+                app:tint="#808080" />
+
+            <ImageButton
                 android:id="@+id/btnPrevious"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
-                android:layout_marginEnd="16dp"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginEnd="8dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Previous"
                 android:src="@drawable/ic_skip_previous"
@@ -198,48 +207,29 @@
 
             <ImageButton
                 android:id="@+id/btnPlayPause"
-                android:layout_width="56dp"
-                android:layout_height="56dp"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
                 android:background="@drawable/play_button_background"
                 android:contentDescription="Play/Pause"
                 android:src="@drawable/ic_play"
-                android:padding="12dp"
+                android:padding="8dp"
                 app:tint="#FFFFFF" />
 
             <ImageButton
                 android:id="@+id/btnNext"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
-                android:layout_marginStart="16dp"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginStart="8dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Next"
                 android:src="@drawable/ic_skip_next"
                 app:tint="#FFFFFF" />
 
-        </LinearLayout>
-
-        <!-- Shuffle and Repeat Buttons -->
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:gravity="center"
-            android:orientation="horizontal">
-
-            <ImageButton
-                android:id="@+id/btnShuffle"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginEnd="24dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="Shuffle"
-                android:src="@drawable/ic_shuffle"
-                app:tint="#808080" />
-
             <ImageButton
                 android:id="@+id/btnRepeat"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginStart="8dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Repeat"
                 android:src="@drawable/ic_repeat"
@@ -251,14 +241,14 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="4dp"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
             <ImageButton
                 android:id="@+id/btnMute"
-                android:layout_width="28dp"
-                android:layout_height="28dp"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:src="@drawable/ic_volume"
                 app:tint="#4CAF50" />
@@ -268,8 +258,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="4dp"
                 android:max="100"
                 android:progress="70"
                 android:progressTint="#4CAF50"
@@ -277,11 +267,11 @@
 
             <TextView
                 android:id="@+id/tvVolumePercent"
-                android:layout_width="36dp"
+                android:layout_width="28dp"
                 android:layout_height="wrap_content"
                 android:text="70%"
                 android:textColor="#B0B0B0"
-                android:textSize="11sp"
+                android:textSize="9sp"
                 android:textAlignment="textEnd" />
 
         </LinearLayout>

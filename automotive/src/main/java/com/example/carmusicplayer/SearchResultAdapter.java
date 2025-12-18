@@ -60,34 +60,36 @@ public class SearchResultAdapter extends RecyclerView.Adapter<SearchResultAdapte
         
         // Favorite button click - save to database as a new song
         holder.btnFavorite.setOnClickListener(v -> {
+            MusicDatabaseHelper dbHelper = MusicDatabaseHelper.getInstance(context);
             boolean currentFav = favoriteIds.contains(track.getId());
+            
             if (currentFav) {
                 favoriteIds.remove(track.getId());
                 updateFavoriteIcon(holder.btnFavorite, false);
+                // Also remove from database
+                dbHelper.removeFromFavorites(track.getId());
                 Toast.makeText(context, "Removed from favorites", Toast.LENGTH_SHORT).show();
             } else {
                 favoriteIds.add(track.getId());
                 updateFavoriteIcon(holder.btnFavorite, true);
                 
-                // Save to database
-                MusicDatabaseHelper dbHelper = MusicDatabaseHelper.getInstance(context);
-                Song song = new Song(
-                    track.getId(),
-                    track.getTitle(),
-                    track.getArtist(),
-                    track.getAlbum(),
-                    track.getPreviewUrl(), // Use preview URL as path
-                    track.getDuration() * 1000L, // Convert to ms
-                    0
-                );
-                
-                // Insert song if not exists, then add to favorites
-                long songId = dbHelper.insertSong(song, false); // false = not an asset
-                if (songId == -1) {
-                    // Song might exist, try to find it
-                    songId = track.getId();
+                // First check if song already exists
+                Song existingSong = dbHelper.getSongById(track.getId());
+                if (existingSong == null) {
+                    // Insert new song with specific ID
+                    Song song = new Song(
+                        track.getId(),
+                        track.getTitle(),
+                        track.getArtist(),
+                        track.getAlbum(),
+                        track.getPreviewUrl(),
+                        track.getDuration() * 1000L,
+                        0
+                    );
+                    dbHelper.insertSongWithId(song);
                 }
-                dbHelper.addToFavorites(songId);
+                // Add to favorites
+                dbHelper.addToFavorites(track.getId());
                 
                 Toast.makeText(context, "Added to favorites ❤️", Toast.LENGTH_SHORT).show();
             }

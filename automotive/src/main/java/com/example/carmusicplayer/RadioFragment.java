@@ -68,6 +68,20 @@ public class RadioFragment extends Fragment implements SearchResultAdapter.OnTra
             }
             return false;
         });
+        
+        // Hide mini player and bottom nav when search field is focused
+        etSearchQuery.setOnFocusChangeListener((v, hasFocus) -> {
+            if (getActivity() instanceof MainActivity) {
+                MainActivity mainActivity = (MainActivity) getActivity();
+                if (hasFocus) {
+                    mainActivity.hideMiniPlayer();
+                    mainActivity.hideBottomNav();
+                } else {
+                    mainActivity.showMiniPlayer();
+                    mainActivity.showBottomNav();
+                }
+            }
+        });
     }
 
     private void performSearch() {
@@ -111,9 +125,14 @@ public class RadioFragment extends Fragment implements SearchResultAdapter.OnTra
             return;
         }
         
-        // Play with full track info - global mini player will show automatically
+        // Clear focus from search field and show bottom nav
+        if (etSearchQuery != null) {
+            etSearchQuery.clearFocus();
+        }
         if (getActivity() instanceof MainActivity) {
-            ((MainActivity) getActivity()).playDeezerTrack(track);
+            MainActivity mainActivity = (MainActivity) getActivity();
+            mainActivity.showBottomNav();
+            mainActivity.playDeezerTrack(track);
         }
         
         Toast.makeText(getContext(), "Playing: " + track.getTitle(), Toast.LENGTH_SHORT).show();
