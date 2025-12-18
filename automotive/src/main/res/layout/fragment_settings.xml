@@ -15,6 +15,18 @@
         android:textStyle="bold"
         android:layout_marginBottom="24dp" />
 
+    <!-- Import Music Button -->
+    <Button
+        android:id="@+id/btnImportMusic"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="📁 Import Music from Device"
+        android:textColor="#FFFFFF"
+        android:backgroundTint="#4CAF50"
+        android:padding="16dp"
+        android:layout_marginBottom="24dp" />
+
+
     <!-- Theme Setting -->
     <LinearLayout
         android:layout_width="match_parent"

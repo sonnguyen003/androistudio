@@ -235,12 +235,6 @@ public class MainActivity extends AppCompatActivity {
         currentPlaylist = playlist;
         currentSongIndex = position;
 
-        // Check if it's a demo song
-        if (MusicScanner.isDemoSong(song)) {
-            updateFragmentUI();
-            Toast.makeText(this, "Demo mode - Add MP3 files to assets", Toast.LENGTH_SHORT).show();
-            return;
-        }
 
         // Release previous player
         if (mediaPlayer != null) {
@@ -377,26 +371,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void onSongComplete() {
-        switch (repeatMode) {
-            case REPEAT_ONE:
-                playSong(currentSong, currentPlaylist, currentSongIndex);
-                break;
-            case REPEAT_ALL:
-                playNext();
-                break;
-            case REPEAT_OFF:
-            default:
-                if (currentSongIndex < currentPlaylist.size() - 1) {
-                    playNext();
-                } else {
-                    isPlaying = false;
-                    updateFragmentUI();
-                }
-                break;
-        }
-    }
-
     public void togglePlayPause() {
         if (mediaPlayer == null) {
             if (homeFragment != null && !homeFragment.getSongList().isEmpty()) {
@@ -439,6 +413,37 @@ public class MainActivity extends AppCompatActivity {
     public void seekTo(int position) {
         if (mediaPlayer != null) {
             mediaPlayer.seekTo(position);
+            // Update UI immediately after seeking
+            if (homeFragment != null) {
+                homeFragment.updateProgress(position);
+            }
+            if (globalMiniPlayer.getVisibility() == android.view.View.VISIBLE) {
+                seekBarMini.setProgress(position);
+                updateMiniTimeLabel(tvMiniCurrentTime, position);
+            }
+        }
+    }
+    
+    // Called when song playback completes
+    private void onSongComplete() {
+        if (repeatMode == REPEAT_ONE) {
+            // Repeat current song
+            if (mediaPlayer != null) {
+                mediaPlayer.seekTo(0);
+                mediaPlayer.start();
+            }
+        } else if (repeatMode == REPEAT_ALL) {
+            // Play next song, loop back to start
+            playNext();
+        } else {
+            // REPEAT_OFF - play next or stop at end
+            if (currentSongIndex < currentPlaylist.size() - 1) {
+                playNext();
+            } else {
+                // End of playlist
+                isPlaying = false;
+                updateFragmentUI();
+            }
         }
     }
 

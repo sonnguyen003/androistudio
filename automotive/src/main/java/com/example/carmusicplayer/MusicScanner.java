@@ -4,13 +4,10 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
-import android.media.MediaMetadataRetriever;
 import android.net.Uri;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,10 +41,9 @@ public class MusicScanner {
             }
         }
         
-        // If still empty, add demo songs (but don't save to database)
+        // Return songs (even if empty - no demo songs)
         if (songs.isEmpty()) {
-            Log.d(TAG, "No songs found, returning demo songs");
-            return getDemoSongs();
+            Log.d(TAG, "No songs found");
         }
         
         return songs;
@@ -58,29 +54,6 @@ public class MusicScanner {
      */
     public static boolean isAssetSong(Song song) {
         return song.getPath().startsWith("music/");
-    }
-    
-    /**
-     * Check if song is a demo placeholder
-     */
-    public static boolean isDemoSong(Song song) {
-        return song.getPath().startsWith("demo://");
-    }
-    
-    /**
-     * Get demo songs for fallback
-     */
-    public static List<Song> getDemoSongs() {
-        List<Song> songs = new ArrayList<>();
-        songs.add(new Song(1, "Highway to the Danger Zone", "Kenny Loggins", "Top Gun OST", 
-                "demo://1", 215000, 0));
-        songs.add(new Song(2, "Take My Breath Away", "Berlin", "Top Gun OST",
-                "demo://2", 248000, 0));
-        songs.add(new Song(3, "Born to Be Wild", "Steppenwolf", "Easy Rider OST",
-                "demo://3", 210000, 0));
-        songs.add(new Song(4, "Life is a Highway", "Rascal Flatts", "Cars OST",
-                "demo://4", 267000, 0));
-        return songs;
     }
     
     private static List<Song> scanWithMediaStore(Context context) {

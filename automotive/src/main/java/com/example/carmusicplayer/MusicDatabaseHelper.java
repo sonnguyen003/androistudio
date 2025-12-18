@@ -15,7 +15,7 @@ import java.util.List;
 public class MusicDatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "music_player.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     // Table names
     public static final String TABLE_SONGS = "songs";
