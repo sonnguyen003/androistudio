@@ -1,6 +1,5 @@
 *.iml
 .idea/
-**/*.mp3
 **/build/
 hs_err_pid*
 .gradle
